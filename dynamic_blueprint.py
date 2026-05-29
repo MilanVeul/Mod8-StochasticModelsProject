@@ -66,7 +66,7 @@ def solve_blueprint_sdp_slow(num_scanners, wait_cost, operating_costs, discount)
 
 
 def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_costs, discount) -> Tuple[dict, dict, int]:
-    max_state = 700
+    max_state = 500
     epsilon = 1e-2
 
     max_d = 10 * num_scanners
@@ -181,6 +181,6 @@ def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict,
 
 
 if __name__ == "__main__":
-    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=15, operating_costs=200, discount=0.9)
+    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=3, wait_cost=15, operating_costs=200, discount=0.9)
     plot_solution(POLICY_ITERATION, optimal_values, optimal_policy)
     # print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations, 20)
