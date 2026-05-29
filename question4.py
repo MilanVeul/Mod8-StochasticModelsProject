@@ -1,7 +1,11 @@
 from solvers.value_iteration import discounted_value_iteration, fast_discounted_value_iteration
+from solvers.policy_iteration import policy_iteration
 from typing import List, Tuple
 import numpy as np
 import scipy.stats as stats
+
+VALUE_ITERATION = "Value Iteration"
+POLICY_ITERATION = "Policy Iteration"
 
 def solve_blueprint_sdp_slow(num_scanners, wait_cost, operating_costs, discount):
 
@@ -60,8 +64,8 @@ def solve_blueprint_sdp_slow(num_scanners, wait_cost, operating_costs, discount)
     )
 
 
-def solve_blueprint_sdp_fast(num_scanners, wait_cost, operating_costs, discount):
-    max_state = 1000
+def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_costs, discount) -> Tuple[dict, dict, int]:
+    max_state = 700
     epsilon = 1e-2
 
     max_d = 10 * num_scanners
@@ -85,8 +89,11 @@ def solve_blueprint_sdp_fast(num_scanners, wait_cost, operating_costs, discount)
     costs = np.full((num_states, num_actions), np.inf)              # from,decision   (Invalid actions have infinite costs)
     transitions = np.zeros((num_states, num_actions, num_states))   # from,decision,to
 
+    valid_init_policy = np.zeros(num_states, dtype=int)
+
     for i in states:
         min_d = int(np.ceil(i/32.0))
+        valid_init_policy[i] = min(min_d, max_d)
         
         actions = range(min(min_d, max_d), max_d+1)
         for d in actions:
@@ -105,16 +112,42 @@ def solve_blueprint_sdp_fast(num_scanners, wait_cost, operating_costs, discount)
             transitions[i, d, j_vals] = poisson_pmf[M + j_vals]
             transitions[i, d, max_state] = 1 - poisson_cdf[M + max_state - 1]
     
-    return fast_discounted_value_iteration(
-        num_states=num_states,
-        costs=costs,
-        transitions=transitions,
-        discount=discount,
-        epsilon=epsilon
-    )
+    print("Starting iteration...")
+    if solver_type == VALUE_ITERATION:
+        return fast_discounted_value_iteration(
+            num_states=num_states,
+            costs=costs,
+            transitions=transitions,
+            discount=discount,
+            epsilon=epsilon
+        )
+    
+    if solver_type == POLICY_ITERATION:
+        return policy_iteration(
+            num_states=num_states,
+            costs=costs,
+            transitions=transitions,
+            discount=discount,
+            initial_policy=valid_init_policy
+        )
 
 
+def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict, iterations: int, limit: int = 20):
+    print("\n" + "="*50)
+    print(f"  {solver_type} converged in {iterations} iterations.")
+    print(f"{'Patient':<9} | {'Decision':<10} | {'Expected Cost (V)':<15}")
+    print("-"*55)
+    
+    for state in range(limit):
+        cost = optimal_values[state]
+        action = optimal_policy[state]
+        print(f"{state:<9} | {action:<10} | {cost:<15.2f}")
+        
+    print("...")
 
 
 if __name__ == "__main__":
-    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(num_scanners=20, wait_cost=15, operating_costs=200, discount=0.8)
+    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
+    print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations)
+    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(VALUE_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
+    print_solution(VALUE_ITERATION, optimal_values, optimal_policy, iterations)

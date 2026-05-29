@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 from collections.abc import Callable
 import numpy as np
 
@@ -53,7 +53,7 @@ def discounted_value_iteration(
 
 
 def fast_discounted_value_iteration(
-        num_states: List,
+        num_states: int,
         costs: np.ndarray, 
         transitions: np.ndarray,
         discount: float,
