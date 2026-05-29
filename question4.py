@@ -132,13 +132,17 @@ def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_cos
         )
 
 
-def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict, iterations: int, limit: int = 20):
+def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict, iterations: int, limit: int = -1):
     print("\n" + "="*50)
     print(f"  {solver_type} converged in {iterations} iterations.")
     print(f"{'Patient':<9} | {'Decision':<10} | {'Expected Cost (V)':<15}")
     print("-"*55)
     
-    for state in range(limit):
+    max = limit
+    if limit == -1:
+        max = len(optimal_values)
+        
+    for state in range(max):
         cost = optimal_values[state]
         action = optimal_policy[state]
         print(f"{state:<9} | {action:<10} | {cost:<15.2f}")
@@ -148,6 +152,6 @@ def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict,
 
 if __name__ == "__main__":
     optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
-    print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations)
+    # print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations, 20)
     optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(VALUE_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
-    print_solution(VALUE_ITERATION, optimal_values, optimal_policy, iterations)
+    # print_solution(VALUE_ITERATION, optimal_values, optimal_policy, iterations, 20)
