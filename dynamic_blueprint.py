@@ -140,7 +140,7 @@ def plot_solution(solver_type: str, optimal_values: dict, optimal_policy: dict):
     policy_list = [int(optimal_policy[s]) for s in sorted_states]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
-    fig.suptitle(f"Optimal Strategy Profile via {solver_type}", fontsize=14, fontweight='bold')
+    fig.suptitle(f"Optimal Dynamic Blueprint", fontsize=14, fontweight='bold')
 
     # Left Subplot: Optimal Capacity Decisions (Policy)
     ax1.plot(states_list, policy_list, color='darkblue', linewidth=2, label="Optimal Policy ($d^*$)")
@@ -160,7 +160,7 @@ def plot_solution(solver_type: str, optimal_values: dict, optimal_policy: dict):
 
     # Adjust layout and display the figures
     plt.tight_layout()
-    plt.savefig("diagrams/question4_solution.png")
+    plt.savefig("diagrams/dynamic-blueprint-solution.png")
 
 def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict, iterations: int, limit: int = -1):
     print("\n" + "="*50)
@@ -181,6 +181,6 @@ def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict,
 
 
 if __name__ == "__main__":
-    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=10, operating_costs=200, discount=0.8)
+    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=15, operating_costs=200, discount=0.9)
     plot_solution(POLICY_ITERATION, optimal_values, optimal_policy)
     # print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations, 20)
