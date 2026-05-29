@@ -3,6 +3,7 @@ from solvers.policy_iteration import policy_iteration
 from typing import List, Tuple
 import numpy as np
 import scipy.stats as stats
+import matplotlib.pyplot as plt
 
 VALUE_ITERATION = "Value Iteration"
 POLICY_ITERATION = "Policy Iteration"
@@ -131,6 +132,35 @@ def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_cos
             initial_policy=valid_init_policy
         )
 
+def plot_solution(solver_type: str, optimal_values: dict, optimal_policy: dict):
+    sorted_states = sorted(optimal_values.keys())
+    
+    states_list = [int(s) for s in sorted_states]
+    values_list = [float(optimal_values[s]) for s in sorted_states]
+    policy_list = [int(optimal_policy[s]) for s in sorted_states]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    fig.suptitle(f"Optimal Strategy Profile via {solver_type}", fontsize=14, fontweight='bold')
+
+    # Left Subplot: Optimal Capacity Decisions (Policy)
+    ax1.plot(states_list, policy_list, color='darkblue', linewidth=2, label="Optimal Policy ($d^*$)")
+    ax1.set_title("Optimal Actions (Scanner Day-Parts to Open)")
+    ax1.set_xlabel("Initial Patient Backlog ($i$)")
+    ax1.set_ylabel("Number of Day-Parts ($d$)")
+    ax1.grid(True, linestyle='--', alpha=0.6)
+    ax1.legend()
+
+    # Right Subplot: Value Function (Long-Term Expected Discounted Cost)
+    ax2.plot(states_list, values_list, color='crimson', linewidth=2, label="Value Function ($V^*$)")
+    ax2.set_title("Expected Value Function (Total Discounted Cost)")
+    ax2.set_xlabel("Initial Patient Backlog ($i$)")
+    ax2.set_ylabel("Expected Long-Term Cost")
+    ax2.grid(True, linestyle='--', alpha=0.6)
+    ax2.legend()
+
+    # Adjust layout and display the figures
+    plt.tight_layout()
+    plt.savefig("diagrams/question4_solution.png")
 
 def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict, iterations: int, limit: int = -1):
     print("\n" + "="*50)
@@ -141,7 +171,7 @@ def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict,
     max = limit
     if limit == -1:
         max = len(optimal_values)
-        
+
     for state in range(max):
         cost = optimal_values[state]
         action = optimal_policy[state]
@@ -151,7 +181,6 @@ def print_solution(solver_type: str, optimal_values: dict, optimal_policy: dict,
 
 
 if __name__ == "__main__":
-    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
+    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(POLICY_ITERATION, num_scanners=20, wait_cost=10, operating_costs=200, discount=0.8)
+    plot_solution(POLICY_ITERATION, optimal_values, optimal_policy)
     # print_solution(POLICY_ITERATION, optimal_values, optimal_policy, iterations, 20)
-    optimal_values, optimal_policy, iterations = solve_blueprint_sdp_fast(VALUE_ITERATION, num_scanners=20, wait_cost=5000, operating_costs=200, discount=0.8)
-    # print_solution(VALUE_ITERATION, optimal_values, optimal_policy, iterations, 20)
