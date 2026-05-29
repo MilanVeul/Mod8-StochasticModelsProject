@@ -49,7 +49,7 @@ def discounted_value_iteration(
     else:
         raise Exception("Reached maximum iterations before converging.")
     
-    return v, policy, iter
+    return v, policy, iter+1
 
 
 def fast_discounted_value_iteration(
@@ -89,4 +89,4 @@ def fast_discounted_value_iteration(
     # Construct easy-to-use dicts
     v_dict = {i: v[i] for i in range(num_states)}
     policy_dict = {i: policy[i] for i in range(num_states)}
-    return v_dict, policy_dict, iter
+    return v_dict, policy_dict, iter+1

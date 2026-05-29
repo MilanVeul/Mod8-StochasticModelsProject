@@ -44,6 +44,6 @@ def policy_iteration(
 
     v_dict = {i: V[i] for i in range(num_states)}
     policy_dict = {i: policy[i] for i in range(num_states)}
-    return v_dict, policy_dict, iter
+    return v_dict, policy_dict, iter+1
 
         
