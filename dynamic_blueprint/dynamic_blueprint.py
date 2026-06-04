@@ -1,5 +1,5 @@
-from solvers.value_iteration import discounted_value_iteration, fast_discounted_value_iteration
-from solvers.policy_iteration import policy_iteration
+from sdp_solvers.value_iteration import discounted_value_iteration, fast_discounted_value_iteration
+from sdp_solvers.policy_iteration import policy_iteration
 from typing import List, Tuple
 import numpy as np
 import scipy.stats as stats
@@ -132,6 +132,7 @@ def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_cos
             initial_policy=valid_init_policy
         )
 
+# Written by AI
 def plot_solution(solver_type: str, optimal_values: dict, optimal_policy: dict):
     sorted_states = sorted(optimal_values.keys())
     
