@@ -29,11 +29,10 @@ def compute_fixed_value(initial_state: int, d: int) -> float:
     
     # Pre-extract values outside loop
     d_op_cost = d * operating_costs
-    mult_32_d = 32 * d
 
     while current_discount > epsilon:
         # Fast lookup with a fallback if M drifts outside precomputed limits
-        M = int(mult_32_d - round(state))
+        M = int(16*d - round(state))
         expectation = exp_lookup.get(M, lambda_a if M < 0 else 0.0)
 
         cost = (7.0 * state + 2.5 * expectation) * wait_costs + d_op_cost
@@ -46,7 +45,7 @@ def compute_fixed_value(initial_state: int, d: int) -> float:
 
 def compute_optimal_value(initial_state: int):
     print(f"Computing state {initial_state}")
-    d_values = range(int(290/32), 10*num_scanners + 1)
+    d_values = range(int(290/16), 10*num_scanners + 1)
     minimum_value = 1e9
     minimum_d = -1
     for d in d_values:
@@ -58,15 +57,15 @@ def compute_optimal_value(initial_state: int):
 
 
 if __name__ == "__main__":
-    max_state = 500
+    max_state = 200
     states = list(range(max_state+1))
-    d_values = list(range(int(290 / 32), 10 * num_scanners + 1))
+    d_values = list(range(int(290 / 16), 10 * num_scanners + 1))
 
     fixed_values = []
     for init_state in states:
         min_value = 1e9
         for d in d_values:
-            if 32 * d < init_state: 
+            if 16 * d < init_state: 
                 continue
             value = compute_fixed_value(init_state, d)
             if value < min_value:
