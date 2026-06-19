@@ -17,20 +17,20 @@ def solve_blueprint_sdp_slow(num_scanners, wait_cost, operating_costs, discount)
 
     # precompute distributions
     print("Precomputing distributions...")
-    max_arrival = max_state + 32 * (10 * num_scanners+1)
+    max_arrival = max_state + 16 * (10 * num_scanners+1)
     poisson_pmf = [stats.poisson.pmf(k, lambda_a) for k in range(max_arrival)]
     poisson_cdf = [stats.poisson.cdf(k, lambda_a) for k in range(max_arrival)]
 
     print("Defining functions...")
     def action_space(i: int) -> List[int]:
-        min_d = int(np.ceil(i/32.0))
+        min_d = int(np.ceil(i/16.0))
         max_d = 10 * num_scanners
         if min_d > max_d:
             return [max_d]
         return list(range(min_d, max_d+1))
     
     def costs(i: int, d: int) -> float:
-        M = 32*d - i
+        M = 16*d - i
         assert M >= 0, f"M cannot be negative: M={M}"
 
         prob_M_min_1 = poisson_cdf[M-1]
@@ -40,7 +40,7 @@ def solve_blueprint_sdp_slow(num_scanners, wait_cost, operating_costs, discount)
         return exp_cost
     
     def transitions(i: int, d: int) -> List[Tuple[int, float]]:
-        M = 32*d - i
+        M = 16*d - i
         assert M >= 0, f"M cannot be negative: M={M}"
         trans_list = []
 
@@ -78,7 +78,7 @@ def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_cos
 
     # precompute distributions
     print("Precomputing distributions...")
-    max_arrival = max_state + 32*max_d
+    max_arrival = max_state + 16*max_d
     # poisson_pmf = [stats.poisson.pmf(k, lambda_a) for k in range(max_arrival)]
     # poisson_cdf = [stats.poisson.cdf(k, lambda_a) for k in range(max_arrival)]
     poisson_pmf = stats.poisson.pmf(np.arange(max_arrival), lambda_a)
@@ -93,12 +93,12 @@ def solve_blueprint_sdp_fast(solver_type, num_scanners, wait_cost, operating_cos
     valid_init_policy = np.zeros(num_states, dtype=int)
 
     for i in states:
-        min_d = int(np.ceil(i/32.0))
+        min_d = int(np.ceil(i/16.0))
         valid_init_policy[i] = min(min_d, max_d)
         
         actions = range(min(min_d, max_d), max_d+1)
         for d in actions:
-            M = 32*d - i
+            M = 16*d - i
             assert M >= 0, f"M cannot be negative: M={M}"
 
             # Compute costs
