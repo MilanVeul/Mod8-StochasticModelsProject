@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 # System Parameters
 a, b = 10.0, 19.0
 E_S = (a + b) / 2.0 # = 14.5 minutes
-# lam = 54.25/8 / 60  # Office hours
+
+# lam = ((21+8)/8 + (17 + 36/16)/4) / 60  # Office hours MORNING
+lam = ((21+8)/8 + 6/4) / 60  # Office hours AFTERNOON
+
 # lam = 19.75/16 /60     # Outside office hours
-lam = 29/8 /60     # Weekend days
+# lam = 29/8 /60     # Weekend days
 
 def F_B(t: np.ndarray):
     """CDF of Uniform[10, 19] service time."""
