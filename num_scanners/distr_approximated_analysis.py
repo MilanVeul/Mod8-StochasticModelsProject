@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from waiting_time_approx import solve_mgc_waiting_time
 
 # System Parameters
 a, b = 10.0, 19.0
@@ -29,37 +30,6 @@ def F_Be(t: np.ndarray):
     val[mask3] = E_S
     return val / E_S
 
-def solve_mgc_waiting_time(c: int, T_max=60.0, dt=0.05):
-    """
-    Solves the approximation for W_d using forward step integration.
-    """
-    rho = (lam * E_S) / c
-    if rho >= 1.0:
-        raise ValueError("System is unstable (rho >= 1)")
-        
-    t_grid = np.arange(0, T_max + dt, dt)
-    M = len(t_grid)
-    W_bar = np.zeros(M)
-    
-    # Precompute the baseline inhomogeneous term g(t)
-    g = (1.0 - rho) * (1.0 - (1.0 - F_Be(t_grid))**c)
-    
-    # Forward discretization loop
-    for i in range(M):
-        # Integral term: \lambda * \int_0^{t_i} W_bar(x) * (1 - F(c(t_i - x))) dx
-        if i == 0:
-            integral = 0.0
-        else:
-            # Vectorized look-back for x values from t_0 to t_{i-1}
-            x_indices = np.arange(i)
-            term1 = W_bar[x_indices]
-            term2 = 1.0 - F_B(c * (t_grid[i] - t_grid[x_indices]))
-            integral = np.sum(term1 * term2) * dt
-            
-        W_bar[i] = g[i] + lam * integral
-        
-    return t_grid, W_bar
-
 def plot_distribution(t: np.ndarray, W_conditional: np.ndarray, num_scanners: int):
     plt.figure(figsize=(8, 4))
     plt.plot(t, W_conditional, label=r'$\overline{W(t)}$', color='dodgerblue', lw=2)
@@ -77,7 +47,7 @@ if __name__ == "__main__":
     
     for c in range(1, 5):
         try:
-            t, W_conditional = solve_mgc_waiting_time(c=c, T_max=70.0, dt=0.01)
+            t, W_conditional = solve_mgc_waiting_time(lam=lam, c=c, E_S=E_S, F_B=F_B, F_Be=F_Be, T_max=70.0, dt=0.01)
             bound_idx = np.where(np.abs(W_conditional - allowance) < eps)[0][0]
             print(f"c={c}: {t[bound_idx]} minutes")
         except:
@@ -95,4 +65,3 @@ if __name__ == "__main__":
     # plt.legend()
     # plt.tight_layout()
     # plt.savefig("diagrams/waiting_time_approximation.pdf")
-
