@@ -1,9 +1,9 @@
 import numpy as np
 
-# service desk: 0, anesthetist: 1, CPM: 2, Additional tests: 3, home: 4
+# Secretary : 0, anesthetist: 1, CPM: 2, Additional tests: 3, home: 4
 P = np.array([
     [0, 0.75, 0.25, 0, 0],
-    [0, 0, 0.0825, 0.19, 0.725],
+    [0, 0, 0.0825, 0.19, 0.7275],
     [0, 0.751879699, 0, 0.090225564, 0.157894737],
     [0, 0, 0, 0, 1],
     [0, 0, 0, 0, 0],

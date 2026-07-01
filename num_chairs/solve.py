@@ -2,8 +2,8 @@ import numpy as np
 import scipy.stats as stats
 from scipy.integrate import cumulative_trapezoid, trapezoid
 
-# CT: 0, service desk: 1, anesthetist: 2, CPM: 3, Additional tests: 4
-arrival_rates = np.array([8.4375, 8.3, 8.3, 2.76, 8.28])
+# CT: 0, secretary: 1, anesthetist: 2, CPM: 3, Additional tests: 4
+arrival_rates = np.array([8.4375, 8.3, 8.3, 2.75975, 1.826])
 
 Tmax = 1000
 dt = 0.05
@@ -98,7 +98,7 @@ joint_prob = np.convolve(joint_prob, Ld_test)
 
 cum_joint_prob = np.cumsum(joint_prob)
 
-for k in [42, 43, 44, 45, 46]:
+for k in [41, 42, 43, 44, 45]:
     print(f"P(L_q > {k}) = {1-cum_joint_prob[k]}")
 
 print(f"Required chairs: {np.searchsorted(cum_joint_prob, 0.99)}")
