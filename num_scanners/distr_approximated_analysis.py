@@ -6,11 +6,13 @@ from waiting_time_approx import solve_mgc_waiting_time
 a, b = 10.0, 19.0
 E_S = (a + b) / 2.0 # = 14.5 minutes
 
-# lam = ((21+8)/8 + (17 + 36/16)/4) / 60  # Office hours MORNING
-lam = ((21+8)/8 + 6/4) / 60  # Office hours AFTERNOON
+# lam = 8.4375 / 60  # Office hours MORNING
+# lam = 5.125 / 60  # Office hours AFTERNOON
 
-# lam = 19.75/16 /60     # Outside office hours
-# lam = 29/8 /60     # Weekend days
+# lam = 1.234 /60     # Outside office hours
+
+# lam = 3.625 /60     # Weekend days
+lam = 1.375 /60     # Weekend night
 
 def F_B(t: np.ndarray):
     """CDF of Uniform[10, 19] service time."""
